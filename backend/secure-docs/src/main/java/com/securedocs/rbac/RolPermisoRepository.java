@@ -7,5 +7,7 @@ import java.util.List;
 public interface RolPermisoRepository extends JpaRepository<RolPermiso, Long> {
 
     List<RolPermiso> findByRol(Rol rol);
+    boolean existsByRolAndPermiso(Rol rol, Permiso permiso);
+
 
 }

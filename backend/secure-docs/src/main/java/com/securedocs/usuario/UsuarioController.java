@@ -1,7 +1,9 @@
 package com.securedocs.usuario;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +22,10 @@ public class UsuarioController {
     // CREAR USUARIO
     // ==========================================
 
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
     @PostMapping
     public ResponseEntity<Usuario> crearUsuario(
-            @RequestBody CrearUsuarioRequest request) {
+            @Valid @RequestBody CrearUsuarioRequest request) {
 
         Usuario usuario = usuarioService.crearUsuario(
                 request.getNombre(),
@@ -45,6 +48,7 @@ public class UsuarioController {
     // BUSCAR POR CORREO
     // ==========================================
 
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
     @GetMapping("/correo/{correo}")
     public ResponseEntity<Usuario> buscarPorCorreo(
             @PathVariable String correo) {
@@ -58,6 +62,7 @@ public class UsuarioController {
     // BUSCAR POR ID
     // ==========================================
 
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscarPorId(
             @PathVariable Long id) {
@@ -71,11 +76,72 @@ public class UsuarioController {
     // LISTAR USUARIOS
     // ==========================================
 
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios() {
 
         return ResponseEntity.ok(
                 usuarioService.listarUsuarios()
         );
+    }
+
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> actualizarUsuario(
+            @PathVariable Long id,
+            @Valid @RequestBody ActualizarUsuarioRequest request) {
+
+        return ResponseEntity.ok(
+                usuarioService.actualizarUsuario(id, request)
+        );
+    }
+
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
+    @PutMapping("/{id}/rol/{rolId}")
+    public ResponseEntity<Usuario> cambiarRol(
+            @PathVariable Long id,
+            @PathVariable Long rolId) {
+
+        return ResponseEntity.ok(
+                usuarioService.cambiarRol(id, rolId)
+        );
+    }
+
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
+    @PutMapping("/{id}/departamento/{departamentoId}")
+    public ResponseEntity<Usuario> cambiarDepartamento(
+            @PathVariable Long id,
+            @PathVariable Long departamentoId) {
+
+        return ResponseEntity.ok(
+                usuarioService.cambiarDepartamento(
+                        id,
+                        departamentoId
+                )
+        );
+    }
+
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<Usuario> cambiarEstado(
+            @PathVariable Long id,
+            @Valid @RequestBody CambiarEstadoUsuarioRequest request) {
+
+        return ResponseEntity.ok(
+                usuarioService.cambiarEstado(
+                        id,
+                        request.getEstado()
+                )
+        );
+    }
+
+    @PreAuthorize("hasAuthority('GESTIONAR_USUARIOS')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarUsuario(
+            @PathVariable Long id) {
+
+        usuarioService.eliminarUsuario(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

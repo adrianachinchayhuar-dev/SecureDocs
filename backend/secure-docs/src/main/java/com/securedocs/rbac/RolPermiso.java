@@ -1,5 +1,6 @@
 package com.securedocs.rbac;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +18,7 @@ public class RolPermiso {
 
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
+    @JsonBackReference
     private Rol rol;
 
     @ManyToOne

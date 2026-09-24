@@ -1,5 +1,6 @@
 package com.securedocs.usuario;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.securedocs.departamento.Departamento;
 import com.securedocs.rbac.Rol;
 import jakarta.persistence.*;
@@ -19,6 +20,7 @@ public class Usuario {
     private String correo;
 
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ManyToOne

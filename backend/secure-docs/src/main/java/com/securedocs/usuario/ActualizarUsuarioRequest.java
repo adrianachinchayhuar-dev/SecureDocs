@@ -1,43 +1,24 @@
 package com.securedocs.usuario;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class CrearUsuarioRequest {
+public class ActualizarUsuarioRequest {
 
-    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
-    @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El correo debe tener un formato válido")
     private String correo;
 
-    @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
 
-    @NotNull(message = "El rol es obligatorio")
     private Long rolId;
-
-    @NotNull(message = "El departamento es obligatorio")
     private Long departamentoId;
-
-    @NotBlank(message = "El nivel de seguridad es obligatorio")
     private String nivelSeguridad;
-
-    @NotBlank(message = "El país es obligatorio")
     private String pais;
-
-    @NotBlank(message = "El tipo de contrato es obligatorio")
     private String tipoContrato;
-
-    @NotBlank(message = "El estado es obligatorio")
     private String estado;
-
-    public CrearUsuarioRequest() {
-    }
 
     public String getNombre() {
         return nombre;

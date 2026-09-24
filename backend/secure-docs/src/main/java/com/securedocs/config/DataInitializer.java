@@ -2,6 +2,9 @@ package com.securedocs.config;
 
 import com.securedocs.departamento.Departamento;
 import com.securedocs.departamento.DepartamentoRepository;
+import com.securedocs.usuario.Usuario;
+import com.securedocs.usuario.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.securedocs.rbac.Permiso;
 import com.securedocs.rbac.PermisoRepository;
 import com.securedocs.rbac.Rol;
@@ -20,7 +23,9 @@ public class DataInitializer {
             DepartamentoRepository departamentoRepository,
             RolRepository rolRepository,
             PermisoRepository permisoRepository,
-            RolPermisoRepository rolPermisoRepository) {
+            RolPermisoRepository rolPermisoRepository,
+            UsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder) {
 
         return args -> {
 
@@ -195,6 +200,38 @@ public class DataInitializer {
             // ==========================================
 
             asignar(invitado, consultarDocumento, rolPermisoRepository);
+
+
+            // ==========================================
+            // 10. USUARIO ADMINISTRADOR INICIAL
+            // ==========================================
+
+            if (!usuarioRepository.existsByCorreo("adriana@securedocs.com")) {
+
+                Usuario usuarioAdmin = new Usuario();
+
+                usuarioAdmin.setNombre("Adriana");
+                usuarioAdmin.setCorreo("adriana@securedocs.com");
+
+                // La contraseña se guarda encriptada con BCrypt
+                usuarioAdmin.setPassword(
+                        passwordEncoder.encode("123456")
+                );
+
+                usuarioAdmin.setRol(administrador);
+                usuarioAdmin.setDepartamento(ti);
+
+                usuarioAdmin.setNivelSeguridad("ALTO");
+                usuarioAdmin.setPais("PERU");
+                usuarioAdmin.setTipoContrato("INDEFINIDO");
+                usuarioAdmin.setEstado("ACTIVO");
+
+                usuarioRepository.save(usuarioAdmin);
+
+                System.out.println("Usuario administrador creado:");
+                System.out.println("Correo: adriana@securedocs.com");
+                System.out.println("Contraseña: 123456");
+            }
 
 
             System.out.println("======================================");

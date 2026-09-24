@@ -1,6 +1,8 @@
 package com.securedocs.rbac;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,7 +17,11 @@ public class Rol {
     @Column(nullable = false, unique = true)
     private String nombre;
 
-    @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "rol",
+            cascade = CascadeType.ALL
+    )
+    @JsonManagedReference
     private Set<RolPermiso> permisos = new HashSet<>();
 
     public Rol() {

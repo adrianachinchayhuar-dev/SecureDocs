@@ -1,0 +1,17 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react'
+import api from '../services/api'
+import Title from '../components/Title'
+import Loading from '../components/Loading'
+import Tag from '../components/Tag'
+import { DEPARTAMENTOS } from './Documents'
+
+export default function Users({ onError, onSuccess }) {
+  const [users, setUsers] = useState([]); const [roles, setRoles] = useState([]); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({ nombre: '', correo: '', password: '', rolId: '', departamentoId: 1, nivelSeguridad: 'MEDIO', pais: 'PERU', tipoContrato: 'INDEFINIDO', estado: 'ACTIVO' })
+  const load = async () => { try { const [usersResponse, rolesResponse] = await Promise.all([api.get('/api/usuarios'), api.get('/api/rbac/roles')]); setUsers(usersResponse.data); setRoles(rolesResponse.data) } catch (error) { onError(error) } finally { setLoading(false) } }
+  useEffect(() => { load() }, [])
+  const create = async (event) => { event.preventDefault(); setSaving(true); try { await api.post('/api/usuarios', { ...form, rolId: Number(form.rolId), departamentoId: Number(form.departamentoId) }); await load(); onSuccess('Usuario creado correctamente.'); setForm({ ...form, nombre: '', correo: '', password: '' }) } catch (error) { onError(error) } finally { setSaving(false) } }
+  return <div><Title eyebrow="ADMINISTRACIÓN" title="Usuarios" text="Gestiona identidades y atributos que participan en ABAC." /><div className="row g-4"><div className="col-lg-4"><form className="card form-card" onSubmit={create}><h3>Crear usuario</h3><Field label="Nombre" value={form.nombre} set={(v) => setForm({ ...form, nombre: v })} required /><Field label="Correo" value={form.correo} set={(v) => setForm({ ...form, correo: v })} required type="email" /><Field label="Contraseña" value={form.password} set={(v) => setForm({ ...form, password: v })} required type="password" /><label className="form-label">Rol<select className="form-select" value={form.rolId} onChange={(event) => setForm({ ...form, rolId: event.target.value })} required><option value="">Selecciona un rol</option>{roles.map((role) => <option key={role.id} value={role.id}>{role.nombre}</option>)}</select></label><label className="form-label">Departamento<select className="form-select" value={form.departamentoId} onChange={(event) => setForm({ ...form, departamentoId: event.target.value })}>{DEPARTAMENTOS.map((department) => <option key={department.id} value={department.id}>{department.nombre}</option>)}</select></label><button className="btn btn-primary w-100" disabled={saving}>{saving ? 'Creando…' : 'Crear usuario'}</button></form></div><div className="col-lg-8"><div className="card table-card">{loading ? <Loading /> : <div className="table-responsive"><table className="table align-middle mb-0"><thead><tr><th>USUARIO</th><th>ROL</th><th>DEPARTAMENTO</th><th>ESTADO</th></tr></thead><tbody>{users.map((user) => <tr key={user.id}><td><strong>{user.nombre}</strong><small>{user.correo}</small></td><td><Tag text={user.rol?.nombre} /></td><td>{user.departamento?.nombre || '—'}</td><td><Tag text={user.estado} tone="green" /></td></tr>)}</tbody></table></div>}</div></div></div></div>
+}
+function Field({ label, value, set, required, type = 'text' }) { return <label className="form-label">{label}<input className="form-control" type={type} value={value} onChange={(event) => set(event.target.value)} required={required} /></label> }
